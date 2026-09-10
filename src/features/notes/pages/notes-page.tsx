@@ -4,6 +4,7 @@ import "./notes-page.css";
 export function NotesPage() {
   const [notes, setNotes] = useState<string[]>([]);
   const [current, setCurrent] = useState("");
+  const [description, setDescription] = useState("");
 
   function addNote() {
     if (!current.trim()) return;
@@ -26,6 +27,10 @@ export function NotesPage() {
     });
   }
 
+  function clearDescription() {
+    setDescription("");
+  }
+
   return (
     <div className="notes-page">
       <h1>Notes</h1>
@@ -40,6 +45,20 @@ export function NotesPage() {
         <button className="btn add" onClick={addNote}>
           Add note
         </button>
+      </div>
+
+      <div className="description-row">
+        <div className="description-input-wrapper">
+          <input
+            className="description-input"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Add a description for the notes..."
+          />
+          <button className="btn clear" onClick={clearDescription} title="Clear description">
+            ✕
+          </button>
+        </div>
       </div>
 
       <div className="notes-list">
