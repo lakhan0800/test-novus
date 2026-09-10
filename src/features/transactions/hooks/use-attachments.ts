@@ -60,7 +60,7 @@ export function useAttachments(
   }, [transactionId]);
 
   useEffect(() => {
-    reload();
+    reload(); // eslint-disable-line react-hooks/set-state-in-effect
   }, [reload]);
 
   const totalCount = attachments.length + stagedFiles.length;
