@@ -91,10 +91,10 @@
   background: #1e90ff; /* blue */
 }
 
-/* Delete note — yellow (use dark text for accessibility) */
+/* Delete note — pink */
 .btn.delete {
-  background: #f6c21b; /* yellow */
-  color: #111;
+  background: #ff1493; /* pink */
+  color: white;
 }
 
 /* Save note — red */
