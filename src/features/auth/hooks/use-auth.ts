@@ -35,14 +35,16 @@ export function useAuth(): AuthState & AuthActions {
   const [isLoading, setIsLoading] = useState(true);
 
   const identifyPendoVisitor = useCallback((u: User) => {
-    pendo.identify({
-      visitor: {
-        id: u.id,
-        full_name: u.displayName,
-        username: u.username,
-        createdAt: u.createdAt,
-      },
-    });
+    if (typeof window !== "undefined" && window.pendo) {
+      window.pendo.identify({
+        visitor: {
+          id: u.id,
+          full_name: u.displayName,
+          username: u.username,
+          createdAt: u.createdAt,
+        },
+      });
+    }
   }, []);
 
   const loadSession = useCallback(async () => {
@@ -142,7 +144,9 @@ export function useAuth(): AuthState & AuthActions {
     clearSession();
     setUser(null);
     setWorkspace(null);
-    pendo.clearSession();
+    if (typeof window !== "undefined" && window.pendo) {
+      window.pendo.clearSession();
+    }
   }, []);
 
   const setActiveWorkspace = useCallback((ws: Workspace) => {
