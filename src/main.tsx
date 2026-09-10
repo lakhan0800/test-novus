@@ -3,11 +3,23 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 
-pendo.initialize({
-  visitor: {
-    id: "",
-  },
-});
+declare global {
+  interface Window {
+    pendo?: {
+      initialize: (config: { visitor: { id: string } }) => void;
+      identify: (config: { visitor: Record<string, unknown> }) => void;
+      clearSession: () => void;
+    };
+  }
+}
+
+if (typeof window !== "undefined" && window.pendo) {
+  window.pendo.initialize({
+    visitor: {
+      id: "",
+    },
+  });
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
