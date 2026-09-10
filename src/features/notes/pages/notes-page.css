@@ -19,6 +19,30 @@
   font-size: 16px;
 }
 
+.description-row {
+  margin-bottom: 24px;
+}
+
+.description-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.description-input {
+  width: 100%;
+  padding: 8px 40px 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  font-style: italic;
+  color: #666;
+}
+
+.description-input::placeholder {
+  color: #999;
+}
+
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -54,6 +78,12 @@
   color: white;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* Add note — blue */
@@ -70,6 +100,25 @@
 /* Save note — red */
 .btn.save {
   background: #e02424; /* red */
+}
+
+/* Clear description — cross button */
+.btn.clear {
+  position: absolute;
+  right: 8px;
+  padding: 4px 8px;
+  background: #999;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn.clear:hover {
+  background: #666;
+  opacity: 1;
 }
 
 /* small responsive tweak */
