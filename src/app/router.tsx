@@ -10,6 +10,7 @@ import { InsightsPage } from "@/features/insights/pages/insights-page";
 import { SettingsPage } from "@/features/settings/pages/settings-page";
 import { ProtectedRoute } from "@/shared/components/protected-route";
 import { BotPage } from "@/features/bot/pages/bot-page";
+import { NotesPage } from "@/features/notes/pages/notes-page";
 
 function GuestGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, hasWorkspace, isLoading } = useAuthContext();
@@ -95,6 +96,14 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notes"
+          element={
+            <ProtectedRoute>
+              <NotesPage />
             </ProtectedRoute>
           }
         />
