@@ -11,12 +11,16 @@ import { GoalCard } from "../components/goal-card";
 import { GoalFormDialog } from "../components/goal-form";
 import { ContributionFormDialog } from "../components/contribution-form";
 import { DeleteGoalDialog } from "../components/delete-goal-dialog";
-import type { GoalFormValues, ContributionFormValues } from "../schemas/goal.schema";
+import type {
+  GoalFormValues,
+  ContributionFormValues,
+} from "../schemas/goal.schema";
 import type { Goal } from "@/types";
 
 export function GoalsPage() {
   const { workspace } = useAuthContext();
-  const { goals, isLoading, addGoal, editGoal, removeGoal, contribute } = useGoals(workspace!.id);
+  const { goals, isLoading, addGoal, editGoal, removeGoal, contribute } =
+    useGoals(workspace!.id);
 
   const [showForm, setShowForm] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -36,6 +40,11 @@ export function GoalsPage() {
         color: values.color,
       });
       setShowForm(false);
+      pendo?.track("goal_created", {
+        targetAmount: values.targetAmount,
+        hasDeadline: !!values.deadline,
+        color: values.color,
+      });
       toast.success("Goal created");
     } catch {
       toast.error("Failed to create goal");
@@ -67,6 +76,13 @@ export function GoalsPage() {
         date: values.date,
         note: values.note || undefined,
       });
+      pendo?.track("goal_contribution_added", {
+        amount: values.amount,
+        goalId: contributingGoal.id,
+        goalTargetAmount: contributingGoal.targetAmount,
+        contributionCount: contributingGoal.contributions.length + 1,
+        hasNote: !!values.note,
+      });
       setContributingGoal(null);
       toast.success("Contribution added");
     } catch {
@@ -78,6 +94,11 @@ export function GoalsPage() {
     if (!deletingGoal) return;
     try {
       await removeGoal(deletingGoal.id);
+      pendo?.track("goal_deleted", {
+        goalId: deletingGoal.id,
+        goalTargetAmount: deletingGoal.targetAmount,
+        contributionCount: deletingGoal.contributions.length,
+      });
       setDeletingGoal(null);
       toast.success("Goal deleted");
     } catch {
@@ -109,10 +130,14 @@ export function GoalsPage() {
               No savings goals yet
             </p>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Create a goal like &ldquo;Vacation: $2,000&rdquo;, add money toward it, and track your
-              projected completion date.
+              Create a goal like &ldquo;Vacation: $2,000&rdquo;, add money
+              toward it, and track your projected completion date.
             </p>
-            <Button size="sm" className="mt-2" onClick={() => setShowForm(true)}>
+            <Button
+              size="sm"
+              className="mt-2"
+              onClick={() => setShowForm(true)}
+            >
               <Plus data-icon="inline-start" />
               Create your first goal
             </Button>
@@ -136,7 +161,11 @@ export function GoalsPage() {
       )}
 
       {showForm && (
-        <GoalFormDialog open={showForm} onSubmit={handleAdd} onCancel={() => setShowForm(false)} />
+        <GoalFormDialog
+          open={showForm}
+          onSubmit={handleAdd}
+          onCancel={() => setShowForm(false)}
+        />
       )}
       {editingGoal && (
         <GoalFormDialog

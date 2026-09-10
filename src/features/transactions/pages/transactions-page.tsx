@@ -3,12 +3,20 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/shared/components/app-layout";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAuthContext } from "@/features/auth/hooks/auth-context";
 import { useTransactions } from "../hooks/use-transactions";
 import { TransactionTable } from "../components/transaction-table";
 import { TransactionForm } from "../components/transaction-form";
-import { TransactionFiltersBar, type TransactionFilters } from "../components/transaction-filters";
+import {
+  TransactionFiltersBar,
+  type TransactionFilters,
+} from "../components/transaction-filters";
 import { DeleteTransactionDialog } from "../components/delete-transaction-dialog";
 import { useAttachments } from "../hooks/use-attachments";
 import { getAttachmentCounts } from "@/lib/db/repositories/attachments.repo";
@@ -18,13 +26,25 @@ import type { Transaction } from "@/types";
 
 export function TransactionsPage() {
   const { workspace } = useAuthContext();
-  const { transactions, categories, isLoading, addTransaction, editTransaction, removeTransaction } =
-    useTransactions(workspace!.id);
+  const {
+    transactions,
+    categories,
+    isLoading,
+    addTransaction,
+    editTransaction,
+    removeTransaction,
+  } = useTransactions(workspace!.id);
 
   const [showForm, setShowForm] = useState(false);
-  const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(null);
-  const [deletingTx, setDeletingTx] = useState<TransactionWithCategory | null>(null);
-  const [attachmentCounts, setAttachmentCounts] = useState<Map<string, number>>(new Map());
+  const [editingTx, setEditingTx] = useState<TransactionWithCategory | null>(
+    null,
+  );
+  const [deletingTx, setDeletingTx] = useState<TransactionWithCategory | null>(
+    null,
+  );
+  const [attachmentCounts, setAttachmentCounts] = useState<Map<string, number>>(
+    new Map(),
+  );
 
   // Staged receipts for the add flow (no transaction id yet) and live
   // receipts for the edit flow.
@@ -39,7 +59,9 @@ export function TransactionsPage() {
       setAttachmentCounts(new Map());
       return;
     }
-    setAttachmentCounts(await getAttachmentCounts(transactionIdsKey.split(",")));
+    setAttachmentCounts(
+      await getAttachmentCounts(transactionIdsKey.split(",")),
+    );
   }, [transactionIdsKey]);
 
   useEffect(() => {
@@ -57,9 +79,14 @@ export function TransactionsPage() {
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((tx) => {
-      if (filters.search && !tx.description.toLowerCase().includes(filters.search.toLowerCase())) return false;
+      if (
+        filters.search &&
+        !tx.description.toLowerCase().includes(filters.search.toLowerCase())
+      )
+        return false;
       if (filters.type !== "all" && tx.type !== filters.type) return false;
-      if (filters.categoryId && tx.categoryId !== filters.categoryId) return false;
+      if (filters.categoryId && tx.categoryId !== filters.categoryId)
+        return false;
       if (filters.month) {
         const txMonth = tx.date.slice(0, 7);
         if (txMonth !== filters.month) return false;
@@ -70,9 +97,21 @@ export function TransactionsPage() {
 
   async function handleAdd(values: TransactionFormValues) {
     try {
-      const created = await addTransaction({ ...values, workspaceId: workspace!.id, notes: values.notes ?? "" });
+      const created = await addTransaction({
+        ...values,
+        workspaceId: workspace!.id,
+        notes: values.notes ?? "",
+      });
       await addAttachments.flushStaged(created.id);
       setShowForm(false);
+      pendo?.track("transaction_added", {
+        transactionType: values.type,
+        amount: values.amount,
+        categoryId: values.categoryId,
+        isRecurring: values.isRecurring,
+        hasAttachments: addAttachments.totalCount > 0,
+        attachmentCount: addAttachments.totalCount,
+      });
       toast.success("Transaction added");
     } catch {
       toast.error("Failed to add transaction");
@@ -91,6 +130,12 @@ export function TransactionsPage() {
       await editTransaction(updated);
       setEditingTx(null);
       await refreshAttachmentCounts();
+      pendo?.track("transaction_edited", {
+        transactionType: values.type,
+        amount: values.amount,
+        categoryId: values.categoryId,
+        isRecurring: values.isRecurring,
+      });
       toast.success("Transaction updated");
     } catch {
       toast.error("Failed to update transaction");
@@ -101,6 +146,11 @@ export function TransactionsPage() {
     if (!deletingTx) return;
     try {
       await removeTransaction(deletingTx.id);
+      pendo?.track("transaction_deleted", {
+        transactionType: deletingTx.type,
+        amount: deletingTx.amount,
+        categoryName: deletingTx.categoryName,
+      });
       setDeletingTx(null);
       toast.success("Transaction deleted");
     } catch {
