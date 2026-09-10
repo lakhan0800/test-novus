@@ -75,6 +75,7 @@ export function useAuth(): AuthState & AuthActions {
   }, [identifyPendoVisitor]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- pre-existing pattern: session restore on mount
     loadSession();
   }, [loadSession]);
 
