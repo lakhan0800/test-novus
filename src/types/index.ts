@@ -5,6 +5,7 @@ export interface User {
   id: string;
   username: string;
   displayName: string;
+  email: string;
   avatarInitials: string;
   passwordHash: string;
   salt: string;

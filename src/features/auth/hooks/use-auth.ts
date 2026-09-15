@@ -21,6 +21,7 @@ interface AuthActions {
   signUp: (
     username: string,
     displayName: string,
+    email: string,
     password: string,
   ) => Promise<void>;
   signIn: (username: string, password: string) => Promise<void>;
@@ -41,6 +42,7 @@ export function useAuth(): AuthState & AuthActions {
           id: u.id,
           full_name: u.displayName,
           username: u.username,
+          email: u.email,
           createdAt: u.createdAt,
         },
       });
@@ -82,7 +84,12 @@ export function useAuth(): AuthState & AuthActions {
   }, [loadSession]);
 
   const signUp = useCallback(
-    async (username: string, displayName: string, password: string) => {
+    async (
+      username: string,
+      displayName: string,
+      email: string,
+      password: string,
+    ) => {
       const existing = await getUserByUsername(username);
       if (existing) throw new Error("Username is already taken");
 
@@ -98,6 +105,7 @@ export function useAuth(): AuthState & AuthActions {
         id: crypto.randomUUID(),
         username,
         displayName,
+        email,
         avatarInitials: initials,
         passwordHash: hash,
         salt,
