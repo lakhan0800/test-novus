@@ -34,7 +34,24 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
           {...register("displayName")}
         />
         {errors.displayName && (
-          <p className="text-sm text-destructive">{errors.displayName.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.displayName.message}
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="jane@example.com"
+          autoComplete="email"
+          aria-invalid={!!errors.email}
+          {...register("email")}
+        />
+        {errors.email && (
+          <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
       </div>
 
@@ -70,7 +87,11 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
-            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {showPassword ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
           </button>
         </div>
         {errors.password && (
@@ -89,12 +110,16 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.confirmPassword.message}
+          </p>
         )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting && <Loader2 data-icon="inline-start" className="animate-spin" />}
+        {isSubmitting && (
+          <Loader2 data-icon="inline-start" className="animate-spin" />
+        )}
         Create account
       </Button>
     </form>

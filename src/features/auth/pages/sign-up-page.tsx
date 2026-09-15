@@ -11,7 +11,12 @@ export function SignUpPage() {
 
   async function handleSignUp(values: SignUpFormValues) {
     try {
-      await signUp(values.username, values.displayName, values.password);
+      await signUp(
+        values.username,
+        values.displayName,
+        values.email,
+        values.password,
+      );
       pendo?.track("account_created", {
         username: values.username,
         displayName: values.displayName,
