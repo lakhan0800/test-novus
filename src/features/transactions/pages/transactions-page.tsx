@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/shared/components/app-layout";
@@ -94,6 +94,41 @@ export function TransactionsPage() {
       return true;
     });
   }, [transactions, filters]);
+
+  // Debounced tracking of filter usage
+  const filterTrackTimeoutRef = useRef<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined);
+
+  useEffect(() => {
+    const hasActiveFilters =
+      filters.search !== "" ||
+      filters.type !== "all" ||
+      filters.categoryId !== "" ||
+      filters.month !== "";
+
+    if (!hasActiveFilters) return;
+
+    clearTimeout(filterTrackTimeoutRef.current);
+    filterTrackTimeoutRef.current = setTimeout(() => {
+      pendo?.track("transaction_filtered", {
+        hasSearchQuery: filters.search !== "",
+        typeFilter: filters.type,
+        hasCategoryFilter: filters.categoryId !== "",
+        hasMonthFilter: filters.month !== "",
+        activeFilterCount:
+          (filters.search !== "" ? 1 : 0) +
+          (filters.type !== "all" ? 1 : 0) +
+          (filters.categoryId !== "" ? 1 : 0) +
+          (filters.month !== "" ? 1 : 0),
+        resultsCount: filteredTransactions.length,
+      });
+    }, 500);
+
+    return () => {
+      clearTimeout(filterTrackTimeoutRef.current);
+    };
+  }, [filters, filteredTransactions.length]);
 
   async function handleAdd(values: TransactionFormValues) {
     try {

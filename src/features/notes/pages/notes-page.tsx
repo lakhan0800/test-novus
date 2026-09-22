@@ -8,12 +8,20 @@ export function NotesPage() {
 
   function addNote() {
     if (!current.trim()) return;
+    const noteLength = current.trim().length;
     setNotes((s) => [current.trim(), ...s]);
+    pendo?.track("note_added", {
+      noteLength,
+      totalNoteCount: notes.length + 1,
+    });
     setCurrent("");
   }
 
   function deleteNote(index: number) {
     setNotes((s) => s.filter((_, i) => i !== index));
+    pendo?.track("note_deleted", {
+      remainingNoteCount: notes.length - 1,
+    });
   }
 
   function saveNote(index: number) {
