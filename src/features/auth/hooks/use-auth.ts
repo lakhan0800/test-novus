@@ -149,6 +149,7 @@ export function useAuth(): AuthState & AuthActions {
   );
 
   const signOut = useCallback(() => {
+    pendo?.track("user_signed_out");
     clearSession();
     setUser(null);
     setWorkspace(null);
