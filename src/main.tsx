@@ -8,6 +8,7 @@ declare global {
     pendo?: {
       initialize: (config: { visitor: { id: string } }) => void;
       identify: (config: { visitor: Record<string, unknown> }) => void;
+      track: (eventName: string, properties?: Record<string, unknown>) => void;
       clearSession: () => void;
     };
   }

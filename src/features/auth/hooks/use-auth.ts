@@ -149,12 +149,15 @@ export function useAuth(): AuthState & AuthActions {
   );
 
   const signOut = useCallback(() => {
+    if (typeof window !== "undefined" && window.pendo) {
+      window.pendo.track("user_signed_out", {
+        sessionDuration: Math.round(performance.now() / 1000),
+      });
+      window.pendo.clearSession();
+    }
     clearSession();
     setUser(null);
     setWorkspace(null);
-    if (typeof window !== "undefined" && window.pendo) {
-      window.pendo.clearSession();
-    }
   }, []);
 
   const setActiveWorkspace = useCallback((ws: Workspace) => {
