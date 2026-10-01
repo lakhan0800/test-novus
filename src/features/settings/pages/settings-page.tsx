@@ -4,6 +4,8 @@ import { ProfileForm } from "../components/profile-form";
 import { WorkspaceForm } from "../components/workspace-form";
 import { CategoryManager } from "../components/category-manager";
 import { DataExportImport } from "../components/data-export-import";
+import { NotificationPreferences } from "../components/notification-preferences";
+import { QuietHoursCard } from "../components/quiet-hours-card";
 import { BudgetManager } from "@/features/budgets/components/budget-manager";
 
 function Section({ label, description, children }: {
@@ -42,6 +44,11 @@ export function SettingsPage() {
 
         <Section label="Budgets" description="monthly limits">
           <BudgetManager />
+        </Section>
+
+        <Section label="Notifications" description="digest · alerts">
+          <NotificationPreferences />
+          <QuietHoursCard onDeleteAll={() => localStorage.removeItem("notifications")} />
         </Section>
 
         <Section label="Data" description="export · import">
